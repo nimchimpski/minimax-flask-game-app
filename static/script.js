@@ -2,18 +2,32 @@ function init() {
     // Initialize your board and attach event listeners
 }
 
-function makeMove() {
-    // Make a move and update board
-    // You can use fetch API to send the current board state to Flask for processing
+function play(cell) {
+    console.log('---cell=',cell);
+    // mark the board with x or o
+    cell.innerHTML = 'x';
+    // Send the move to the Flask server
     fetch('/move', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({board: currentBoard}),
+        body: JSON.stringify({ move: cell.id }),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    
     .then(data => {
-        // Update your board based on 'data.move'
+        console.log('Success:', data);
+        // Update your game board here based on the response
+    })
+    .catch((error) => {
+        console.error('Errorrrr:', error);
     });
 }
+
+
