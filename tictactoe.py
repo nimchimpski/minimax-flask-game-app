@@ -13,6 +13,7 @@ def initial_state():
     """
     Returns starting state of the board.
     """
+    # print('+++INITIAL_STATE FN+++')
     return [[EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY]]
 
 
@@ -20,12 +21,15 @@ def initial_state_end():
     """
     Returns starting state of the board.
     """
-    return [[EMPTY, O, X], [EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, X]]
+    # print('+++INITIAL_STATE_END FN+++')
+    return [[EMPTY,
+EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY]]
 
 def player(board):
     """
     Returns player who has the next turn on a board.
     """
+    # print('+++PLAYER FN+++')
     if terminal(board) == True:
         return None
     emptycount = sum(row.count(EMPTY) for row in board)
@@ -41,6 +45,7 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
+    # print('+++ACTIONS FN')
     if terminal(board) == True:
         # print('>>>terminalboard?>', terminal(board))
         return None
@@ -56,11 +61,13 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
+    print('+++RESULT FN+++')
+    print('+++action> ', action)
     if terminal(board) == True:
         return None
     # print(f'\n>>>results player  {player(board)}, action  {action}')
     if board[action[0]][action[1]] != EMPTY:
-        raise Exception("Shitty action not allowed")
+        raise Exception("ai trying to overwrite a move")
     else:
         newboard = copy.deepcopy(board)
         newboard[action[0]][action[1]] = player(board)
@@ -119,6 +126,7 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
+    # print('+++MINMAX FN+++')
     if terminal(board) == True:
         # print('minmax() terminal = True')
         return None

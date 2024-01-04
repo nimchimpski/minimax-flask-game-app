@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 import pygame
 import sys
 import time
@@ -12,34 +12,101 @@ app = Flask(__name__)
 app.debug = True
 app.config['ENV'] = 'development'
 
+human = None
+board = ttt.initial_state()
+ai_turn = False
+X = "X"
+O = "O"
+EMPTY = None
+
 
 
 @app.route('/', methods=['GET'])
 def index():
+
     return render_template('index.html')
 
-@app.route('/move', methods=['POST'])
-def receive_move():
-    # extract the move from the request
+@app.route('/chosenplayer', methods=['POST'])
+def chosenplayer():
+    print('>>>CHOSENPLAYER ROUTE')
+    human = request.json.get('chosenplayer')
+    print(f"--- human chose to be : {human} ---")
+    if human == 'X':
+        human = X
+    elif human == 'O':
+        human = O  
+        print('---AI NEEDS TO MOVE NOW')
+
+    print(f"--- human= {human} ---")
+    return jsonify(human)
+    # return redirect(url_for('play'))
+    # returnfromplayer = 'returnfromplayer'
+
+    # return jsonify(returnfromplayer)  
+
+@app.route('/play', methods=['POST', 'GET'])
+def play():
+    print('>>>PLAY ROUTE')
+    global board, ai_turn, human, X, 0, EMPTY
+    ####   CHECK FOR GAME OVER
+    if ttt.terminal(board):
+        print(f'---game over={game_over}')
+        #### detrmine winner
+        winner = ttt.winner(board)
+        return jsonify(winner)
+    ####   DETERMINE WHOSE TURN
+    # look at board
+    # is human x or o
+
+     ####    IF AI - AI MAKES MOVE
+    if human != player and not game_over:
+        print(f"---human!=player")
+        if ai_turn:
+            time.sleep(0.5)
+            aimove = ttt.minimax(board)
+            print(f"---aimove={aimove}")
+            #### update board
+            board = ttt.result(board, aimove)
+            ai_turn = False
+            #### prepare response
+            aimovestr = ''.join(str(e) for e in aimove)
+            print(f"---aimovestr={aimovestr}{type(aimovestr)}")
+
+            
+            return jsonify(aimovestr)
+
+    ####     ELSE EXTRACT MOVE FROM REQUEST
     move = request.json.get('move')
-    print(f"--- Move received: {move} ---")
+    print(f"--- Move received: {move} {type(move)}---")
+    movetuple = tuple(int(char) for char in move)
+    print(f"--- movetuple= {movetuple} ---")
+    
+    ####  UPDATE BOARD   ####
+    board = ttt.result(board, movetuple)
+    print(f"--- board= {board} ---")
+    ####    CHECK FOR GAME OVER
+    game_over = ttt.terminal(board)
+    if game_over:
+        print(f'---game over={game_over}')
+        #### detrmine winner
+        winner = ttt.winner(board)
+        return jsonify(winner)
+    print(f'---game over={game_over}')
+    ####    DETERMINE WHOSE TURN
+    player = ttt.player(board)
+    print(f"--- player after 1st mv= {player} ---")
 
-    # Process the move (you'll replace this with your game logic)
-    # response = process_move(move)
-    response = 'robots_move'
+        else:
+            ai_turn =  True
 
-    # Return the response
-    return jsonify(response)
 
-def process_move(move):
-    render_template('index.html')
-    # Here, insert your Python logic for processing the move
-    # For now, let's just return the move
-    # return {"status": "success", "move": move}
-    return render_template('index.html')
-    board = request.json['board']
-    move = ttt.minimax(board)
-    return jsonify({'move': move})
+
+@app.route('/humansturn', methods=['POST'])
+def humansturn():
+    print(">>>HUMANSTURN ROUTE")
+
+    return
+
 
 if __name__ == '__main__':
     app.run(debug=True)

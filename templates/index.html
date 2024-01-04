@@ -2,36 +2,46 @@
 <html>
 <head>
     <title>Tic-Tac-Toe</title>
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    
 </head>
 <body onload="init()">
-    <H3>NOUGHTS AND CROSSES</P></H3>
+    <H3>X-RISKS AND OPTIMIZERS</P></H3>
     <!-- Your HTML code for game board goes here -->
-    <div id="main">
+    <div id="messages">
+        <p id="message1"></p>
+        <p id="message2"></p>
     </div>
-    <table id="game">
-            <tr>
-                <td id="0" onclick="play(this)"></td>
-                <td id="1" onclick="play(this)"></td>
-                <td id="2" onclick="play(this)"></td>
-            </tr>
-            <tr>
-                <td id="3" onclick="play(this)"></td>
-                <td id="4" onclick="play(this)"></td>
-                <td id="5" onclick="play(this)"></td>
-            </tr>
-            <tr>
-                <td id="6" onclick="play(this)"></td>
-                <td id="7" onclick="play(this)"></td>
-                <td id="8" onclick="play(this)"></td>
-            </tr>
-    </table>
-    <div id="chooseplayer">
-        <p>Choose your player</p>
-        <button id="X" onclick="choose(this)">X</button>
-        <button id="O" onclick="choose(this)">O</button>
+    <div id="container">
+        <div id="chooseplayer">
+    
+        <div>
+            <button id="X" onclick="chosenplayer(this)">X</button>
+            <button id="O" onclick="chosenplayer(this)" >O</button>
+            </div>  
+        </div>
+        <div id="board">
+            <table>
+                <tr>
+                    <td id="00" onclick="play(this)"></td>
+                    <td id="01" onclick="play(this)"></td>
+                    <td id="02" onclick="play(this)"></td>
+                </tr>
+                <tr>
+                    <td id="10" onclick="play(this)"></td>
+                    <td id="11" onclick="play(this)"></td>
+                    <td id="12" onclick="play(this)"></td>
+                </tr>
+                <tr>
+                    <td id="20" onclick="play(this)"></td>
+                    <td id="21" onclick="play(this)"></td>
+                    <td id="22" onclick="play(this)"></td>
+                </tr>
+            </table>
+        </div>
     </div>
-
+   
+   
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
 <style>
@@ -42,16 +52,54 @@
         color: #FFFFFF;
         font-family: 'Gruppo', sans-serif;
         caret-color: transparent;
-        
-        
+        padding: 15px;
+        height: 100vh;
+    }
+    #messages {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: #ffffff 1px solid;
+        margin-bottom: 15px;
+    }
+    button {
+        background-color: #000000;
+        color: #FFFFFF;
+        border: #FFFFFF 1px solid;
+        border-radius: 5px;
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        margin: 5px;
+        font-size: 5rem;
+        font-family: 'Gruppo', sans-serif;
+        top: 2px;
         
     }
-    #main {
-        border: #fcfdfc 1px solid;
-        height:50px;
+    #container {
+        position: relative;
+        padding-top: 0px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* border: #ffffff 1px solid; */
+        /* height:50px; */
     }
-    #game {
-        visibility: hidden;
+    #chooseplayer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* border: #ffffff 1px solid; */
+        
+    }
+    #board {
+        position: absolute;
+        top:0px;
+        display: none;
     }
 
  
