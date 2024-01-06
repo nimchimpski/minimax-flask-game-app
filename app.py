@@ -1,4 +1,7 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flask_session
+from flask_session import Session
+from tempfile import mkdtemp
+from flask_sqalchemy import SQLAlchemy
 import pygame
 import sys
 import time
@@ -11,6 +14,11 @@ app = Flask(__name__)
 # Set the app to debug mode
 app.debug = True
 app.config['ENV'] = 'development'
+
+# Configure session to use filesystem (instead of signed cookies)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 human = None
 board = ttt.initial_state()
@@ -26,7 +34,7 @@ def index():
 
     return render_template('index.html')
 
-@app.route('/chosenplayer', methods=['POST'])
+@app.route('/newgame', methods=['POST'])
 def chosenplayer():
     print('>>>CHOSENPLAYER ROUTE')
     human = request.json.get('chosenplayer')
@@ -44,7 +52,7 @@ def chosenplayer():
 
     # return jsonify(returnfromplayer)  
 
-@app.route('/play', methods=['POST', 'GET'])
+@app.route('/makemove', methods=['POST', 'GET'])
 def play():
     print('>>>PLAY ROUTE')
     global board, ai_turn, human, X, 0, EMPTY
