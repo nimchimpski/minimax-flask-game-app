@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 # from flask_session import Session
 from tempfile import mkdtemp
 from flask_sqlalchemy import SQLAlchemy
+import pygame
 import sys
 import time
 import json
@@ -31,41 +32,47 @@ X = "X"
 O = "O"
 EMPTY = None
 
+with app.app_context():
+    db.create_all()
 
-
-class Gamedb(db.Model):
+class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     boardstate = db.Column(db.String, nullable=False)  # Store board as a string
     human = db.Column(db.String, nullable=False)  # Store human as a string
 
-    def saveboard(self, board, human=None):
-        self.boardstate = json.dumps(board)
-        if human is not None:
-            self.human = json.dumps(human)
-        # print(f"+++ board saved= {board, human} ---")
-        return board
-
-    def getboard(self):
-        return json.loads(self.boardstate)
-
     def __repr__(self):
-        return '<Gamedb %r>' % self.id
+        return '<Game %r>' % self.id
 
-with app.app_context():
-    db.create_all()
-
-gamedb = Gamedb()
+### maybe not needed
+def reset_database():
+    # Delete all records in the Board table
+    db.session.query(Game).delete()
+    # You can add similar lines for other tables if necessary
+    # Commit the changes to the database
+    db.session.commit()
 
 @app.route('/', methods=['GET'])
 def index():
-    print('>>>INDEX ROUTE')
-    
     return render_template('index.html')
 
 @app.route('/play', methods=['POST', 'GET'])
 def play():
-
     #### SUB FUNCTIONS
+
+    def getboard():
+        row1 = Game.query.get(1)
+        if row1:
+            return row1.board_state
+        else:
+            return "row1 not found in db"
+    
+
+    def saveboard(board):
+        game = Game(boardstate=board)
+        db.session.add(game)
+        db.session.commit()
+        print(f"+++ board saved= {board} ---")
+        return board
 
      # define gameover check function
     def gameovercheck(num, board):
@@ -79,7 +86,7 @@ def play():
             #  IF TIE
             if winner is None:
                 winner = 'TIE'
-            return winner
+            return jsonify(winner)
 
     if request.method == 'POST':
         print('>>>PLAY ROUTE')
@@ -87,62 +94,64 @@ def play():
         print(f"--- request.json= {request.json} ---") 
         #### CHECKC IF NEW GAME + INITIALISE
         if request.json.get('newgame') == True:
-            print('--- new game in json ---')
-            #### DEAL WITH CHOSEN PLAYER
-            # set human variable
-            human = request.json.get('human')
-            print(f"--- human chose to be : {human} ---")
             ####   RESET BOARD
             board = ttt.initial_state()
-            print('---board initialised---')
-            #### STORE bOARD and HUMAN IN DB
-            gamedb.saveboard(board, human)
-            print('---initialised board saved---')
+
+            #### STORE bOARD
+            saveboard(board)
+
+            #### DEAL WITH CHOSEN PLAYER
+            # set human variable
+            human = request.json.get('chosenplayer')
+            print(f"--- human chose to be : {human} ---")
+            if human == 'X':
+                X = "X"
+                game.human = X
+            elif human == 'O':
+                O = "O"
+                game.human = O
+            db.session.commit()
+
+        
         ####     HUMAN MOVE
-        if 'humanmove' in request.json:
-            humanmove = request.json.get('humanmove')
-            human = request.json.get('human')
-            print(f"--- humanMove received: {humanmove} {type(humanmove)}---")
-            humanmovetuple = tuple(int(char) for char in humanmove)
-            print(f"--- movetuple= {humanmovetuple} ---")
+        if 'move' in request.json:
+            move = request.json.get('move')
+            print(f"--- human Move received: {move} {type(move)}---")
+            movetuple = tuple(int(char) for char in move)
+            print(f"--- movetuple= {movetuple} ---")
             #### GET BOARD FROM DB
-            board = gamedb.getboard()
+            board = getboard()
             ####  UPDATE BOARD WITH HUMAN MOVE  ####
-            board = ttt.result(board, humanmovetuple)
-            print(f"--- board after human mv= {board} ---")
+            board = ttt.result(board, movetuple)
+            print(f"--- board= {board} ---")
+            #### STORE BOARD IN DB
+            saveboard(board)
             ####   CHECK FOR GAME OVER
-            winner = gameovercheck(human, board)
-            if winner is not None:
-                print(f"--- winner={winner} ---")
-                return jsonify({'winner': winner})
+            board = getboard()
+            gameovercheck(1, board)
             ####    DETERMINE WHOSE TURN
             player = ttt.player(board)
             print(f"--- player after 1st mv= {player} ---")
         ####  AI  MOVE
         print(f"--- AI MOVE")
         time.sleep(0.5)
+        #### GET BOARD FROM DB
+        board = getboard()
         aimove = ttt.minimax(board)
         print(f"---aimove={aimove}")
+        ####   CHECK FOR GAME OVER
+        gameovercheck(2, board)
         #### update board
         board = ttt.result(board, aimove)
-        print(f"--- board after ai mv= {board} ---")
-        ####   CHECK FOR GAME OVER
-        winner = gameovercheck('AI', board)
-        if winner is not None:
-            print(f"--- Ai is winner={winner} ---")
-            aimovestr = ''.join(str(e) for e in aimove)
-            print(f"---aimovestr={aimove}{type(aimove)}")
-            aimove = aimovestr
-            return jsonify({'winner': winner, 'aimove': aimove})
         #### STORE BOARD IN DB
-        gamedb.saveboard(board)
+        saveboard(board)
         #### prepare response
         aimovestr = ''.join(str(e) for e in aimove)
         print(f"---aimovestr={aimove}{type(aimove)}")
         aimove = aimovestr
         print(f"---aimove={aimove}{type(aimove)}")
         
-        return jsonify({'aimove': aimove})
+        return jsonify(aimove)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -15,26 +15,26 @@
         <div id="chooseplayer">
     
         <div>
-            <button id="X" onclick="chosenplayer(this)">X</button>
-            <button id="O" onclick="chosenplayer(this)" >O</button>
+            <button id="X" onclick="ticTacToeGame.newGame(this.id)">X</button>
+            <button id="O" onclick="ticTacToeGame.newGame(this.id)" >O</button>
             </div>  
         </div>
         <div id="board">
             <table>
                 <tr>
-                    <td id="00" onclick="play(this)"></td>
-                    <td id="01" onclick="play(this)"></td>
-                    <td id="02" onclick="play(this)"></td>
+                    <td id="00" class="cell"></td>
+                    <td id="01" class="cell"></td>
+                    <td id="02" class="cell"></td>
                 </tr>
                 <tr>
-                    <td id="10" onclick="play(this)"></td>
-                    <td id="11" onclick="play(this)"></td>
-                    <td id="12" onclick="play(this)"></td>
+                    <td id="10" class="cell"></td>
+                    <td id="11" class="cell"></td>
+                    <td id="12" class="cell"></td>
                 </tr>
                 <tr>
-                    <td id="20" onclick="play(this)"></td>
-                    <td id="21" onclick="play(this)"></td>
-                    <td id="22" onclick="play(this)"></td>
+                    <td id="20" class="cell"></td>
+                    <td id="21" class="cell"></td>
+                    <td id="22" class="cell"></td>
                 </tr>
             </table>
         </div>

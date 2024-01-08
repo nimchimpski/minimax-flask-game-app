@@ -61,8 +61,8 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    print('+++RESULT FN+++')
-    print('+++action> ', action)
+    # print('+++RESULT FN+++')
+    # print('+++action> ', action)
     if terminal(board) == True:
         return None
     # print(f'\n>>>results player  {player(board)}, action  {action}')

@@ -1,116 +1,131 @@
-var human
-var ai
 
-function init() {
-    // Initialize your board and attach event listeners
-}
 
-var message1 = document.getElementById
-    ("message1");
-var message2 = document.getElementById
-    ("message2");
-(function() {
-    message1.innerHTML = "Choose your player";
-    message2.innerHTML = "X plays first";
-})();
-function hideelement(element) {
-    var x = document.getElementById(element);
-    x.style.display = "none";
-}
-function showelement(element) {
-    var x = document.getElementById(element);
-    x.style.display = "block";
-}
-function chosenplayer(chosenplayer) {
-    console.log('---chosenplayer=',chosenplayer.id);
-    // update human choice
-    if (chosenplayer.id === 'X'){
-        human = 'X'
-        ai = 'O'
-        console.log('---h=x human=',human, 'ai=', ai)
-        message2.innerHTML = "Your turn ";
+var ticTacToeGame;
+
+
+class TicTacToeGame {
+    constructor() {
+        this.human = null;
+        this.ai = null;
+        this.newgameatrib = false;
+        this.message1 = document.getElementById("message1");
+        this.message2 = document.getElementById("message2");
+        this.init();
     }
-        
-    else {
-        human = 'O'
-        ai = 'X' 
-        console.log('---h=0 human=',human, 'ai=', ai)
-        message2.innerHTML = "Computer's turn...thinking";
+
+    init() {
+        document.querySelectorAll('.cell').forEach(item => {
+            item.addEventListener('click', event => {
+                this.play(event.target.id);
+            })
+        });
+        document.getElementById('message2').addEventListener('click', event => {
+            this.chooseplayer();
+        });
     }
-    console.log('---human=',human, 'ai=', ai);
-    // Choose your player
-  
-    message1.innerHTML = "You are playing as " + chosenplayer.id; 
-    
+    chooseplayer() {
+        console.log('...+++chooseplayer()');
+        this.showElement("chooseplayer");
+        this.hideElement("board");
+        this.message1.innerHTML = "Choose your player";
+        this.message2.innerHTML = "X plays first";
+        this.message2.style.border = "None";
+        this.disableElement('message2');
+    }
 
-    //hide the choose player
-    hideelement("chooseplayer");
-    
-    // display the baord
-    showelement("board");
+    hideElement(element) {
+        var x = document.getElementById(element);
+        x.style.display = "none";
+    }
 
-    // Send the chosen player to the Flask server
-    fetch('/chosenplayer', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ chosenplayer: chosenplayer.id }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+    showElement(element) {
+        var x = document.getElementById(element);
+        x.style.display = "block";
+    }
+
+    enableElement(element) {
+        var x = document.getElementById(element);
+        x.disabled = false;
+    }
+
+    disableElement(element) {
+        var x = document.getElementById(element);
+        x.disabled = true;
+    }
+
+    newGame(chosenplayer) {
+        console.log('...+++newGame()');
+        // define new game
+        this.newgameatrib = true;
+        this.human = chosenplayer;
+        this.ai = (chosenplayer === 'X') ? 'O' : 'X';
+        this.message2.innerHTML = (chosenplayer === 'X') ? "Your turn " : "Computer's turn...thinking";
+        this.message1.innerHTML = "You are playing as " + this.human;
+
+        this.hideElement("chooseplayer");
+        this.showElement("board");
+
+        if (this.human === 'O') {
+            this.play(true, this.human, this.ai, 'None');
         }
-        return response.json();
-    })
-    .then(data => {
-        console.log('choosepl Success:', data)
-        if (data.result === 'success') {
-            window.location.href = '/play';
+    }
+
+    play(humanmove) {
+        console.log('...+++play(), newgameatrib=' , this.newgameatrib,  'human=', this.human, 'ai=', this.ai, 'humanmove=', humanmove);
+        // check if this call if from board
         
+        if (humanmove !== 'None') {
+            // mark the board
+            document.getElementById(humanmove).innerHTML = this.human;
+            this.message2.innerHTML = "Computer's turn...thinking";
         }
-        
-        
-     
-    })
- 
-   console.log('---human=',human);
+        var newgame
+        if (this.newgameatrib) {
+            console.log('...newgameatrib was true')
+            newgame = true
+            console.log('...newgame2= ',newgame)
+            this.newgameatrib = false
+            console.log('...newgameatrib set to =false? =',this.newgameatrib)
+        }
+        fetch('/play', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 'newgame': newgame, 'human': this.human, 'humanmove': humanmove }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response for playfn was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('playfn data:', data, typeof data);
+            // define not new game
+            this.newgameatrib = false;
+            // mark board with ai move
+            let aimove = data.aimove;
+            document.getElementById(aimove).innerHTML = this.ai;
+            // check for winner
+            if ('winner' in data) {
+                this.message1.innerHTML = 'GAME OVER   '+ (data.winner === this.human ? "You win!" : "You lose!");
+                this.message2.style.border = "1px solid white"
+                this.message2.innerHTML = "Play again?";
+                this.enableElement('message2');
+            } else {
+                
+                this.message2.innerHTML = "Your turn - come on";
+            }
+        })
+        .catch((error) => {
+            console.error('playfn Error :', error);
+        });
+    }
 }
 
+window.onload = () => {
+    ticTacToeGame = new TicTacToeGame();
+   
+};
 
-
-function play(humanmove) {
-    console.log('---humanmove=',humanmove.id);
-    // mark the board with x or o
-    console.log('---human=',human);
-    humanmove.innerHTML = human;
-    // Send the move to the Flask server
-    fetch('/play', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ move: humanmove.id }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response for playfn was not ok');
-        }
-        return response.json();
-    })
-    
-    .then(data => {
-        console.log('play Success:', data);
-        // Update your game board here based on the response
-        aimove = data
-        console.log("---aimove=", aimove)
-        document.getElementById(aimove).innerHTML = ai
-        // update the message
-
-    })
-    .catch((error) => {
-        console.error('playfn Error :', error);
-    });
-}
 
 
