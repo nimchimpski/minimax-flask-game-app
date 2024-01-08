@@ -116,18 +116,21 @@ def play():
             ####   CHECK FOR GAME OVER
             winner = gameovercheck(human, board)
             if winner is not None:
-                print(f"--- winner={winner} ---")
+                print(f"--- GAMEOVER frm humanmove ={winner} ---")
                 return jsonify({'winner': winner})
             #### STORE BOARD IN DB
             gamedb.saveboard(board)
             ####    DETERMINE WHOSE TURN
             player = ttt.player(board)
-            print(f"--- player after 1st mv= {player} ---")
+            print(f">>>player after human mv= {player} ---")
+        
         ####  AI  MOVE
         print(f"--- AI MOVE")
         time.sleep(0.5)
         #### GET BOARD FROM DB
         board = gamedb.getboard()
+        player = ttt.player(board)
+        print(f">>>> player b4 ai mv= {player} ---")
         print(f"+++ board retrieved  ai= {board} ---")
         #### ai makes move
         aimove = ttt.minimax(board)
@@ -141,17 +144,15 @@ def play():
             print(f"--- Ai is winner={winner} ---")
             aimovestr = ''.join(str(e) for e in aimove)
             print(f"---aimovestr={aimove}{type(aimove)}")
-            aimove = aimovestr
-            return jsonify({'winner': winner, 'aimove': aimove})
+            return jsonify({'winner': winner, 'aimove': aimovestr})
         #### STORE BOARD IN DB
         gamedb.saveboard(board)
         #### prepare response
         aimovestr = ''.join(str(e) for e in aimove)
         print(f"---aimovestr={aimove}{type(aimove)}")
-        aimove = aimovestr
         print(f"---aimove={aimove}{type(aimove)}")
         
-        return jsonify({'aimove': aimove})
+        return jsonify({'aimove': aimovestr})
 
 if __name__ == '__main__':
     app.run(debug=True)

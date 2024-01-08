@@ -64,7 +64,8 @@ class TicTacToeGame {
         this.newgameatrib = true;
         this.human = chosenplayer;
         this.ai = (chosenplayer === 'X') ? 'O' : 'X';
-        this.message2.innerHTML = (chosenplayer === 'X') ? "Your turn " : "Computer's turn...thinking";
+        if (chosenplayer === 'X'){
+            this.message2.innerHTML = "Your turn " };
         this.message1.innerHTML = "You are playing as " + this.human;
 
         this.hideElement("chooseplayer");
@@ -82,8 +83,9 @@ class TicTacToeGame {
         if (humanmove) {
             // mark the board
             document.getElementById(humanmove).innerHTML = this.human;
-            this.message2.innerHTML = "Computer's turn...thinking";
+            
         }
+        this.message2.innerHTML = "Computer thinking...";
         var newgame
         if (this.newgameatrib) {
             console.log('...newgameatrib was true')
@@ -107,19 +109,29 @@ class TicTacToeGame {
             console.log('playfn data:', data, typeof data);
             // define not new game
             this.newgameatrib = false;
-            // mark board with ai move
-            let aimove = data.aimove;
-            document.getElementById(aimove).innerHTML = this.ai;
-            // check for winner
+            // check if aimove in data
+            if ('aimove' in data) {
+                console.log('...aimove in data', data.aimove)
+                var aimove = data.aimove;
+                // mark board with ai move
+                document.getElementById(aimove).innerHTML = this.ai;
+            }
+             // check for winner
             if ('winner' in data) {
-                this.message1.innerHTML = 'GAME OVER   '+ (data.winner === this.human ? "You win!" : "You lose!");
+                // is it a tie?
+                if (data.winner === 'TIE')
+                    var result = 'FOOLS. You both lost.'
+                else {
+                    var result = (data.winner === this.human ? "You win!" : "You lose!");}
+                this.message1.innerHTML = 'GAME OVER   '+ result;
                 this.message2.style.border = "1px solid white"
                 this.message2.innerHTML = "Play again?";
                 this.enableElement('message2');
             } else {
-                
                 this.message2.innerHTML = "Your turn - come on";
             }
+            
+           
         })
         .catch((error) => {
             console.error('playfn Error :', error);
