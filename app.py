@@ -42,10 +42,10 @@ class Gamedb(db.Model):
         self.boardstate = json.dumps(board)
         if human is not None:
             self.human = json.dumps(human)
-        # print(f"+++ board saved= {board, human} ---")
         return board
 
     def getboard(self):
+        
         return json.loads(self.boardstate)
 
     def __repr__(self):
@@ -84,29 +84,32 @@ def play():
     if request.method == 'POST':
         print('>>>PLAY ROUTE')
         ####    print all json
-        print(f"--- request.json= {request.json} ---") 
+        print(f"\n--- request.json= {request.json} ---") 
         #### CHECKC IF NEW GAME + INITIALISE
         if request.json.get('newgame') == True:
             print('--- new game in json ---')
             #### DEAL WITH CHOSEN PLAYER
             # set human variable
             human = request.json.get('human')
-            print(f"--- human chose to be : {human} ---")
+            # print(f"--- human chose to be : {human} ---")
             ####   RESET BOARD
             board = ttt.initial_state()
-            print('---board initialised---')
+            # print('---board initialised---')
             #### STORE bOARD and HUMAN IN DB
             gamedb.saveboard(board, human)
-            print('---initialised board saved---')
+            print(f'---initialised board saved---{board}, {human}')
         ####     HUMAN MOVE
-        if 'humanmove' in request.json:
+
+        humanmove = request.json.get('humanmove')
+        if humanmove != None:
             humanmove = request.json.get('humanmove')
             human = request.json.get('human')
             print(f"--- humanMove received: {humanmove} {type(humanmove)}---")
             humanmovetuple = tuple(int(char) for char in humanmove)
-            print(f"--- movetuple= {humanmovetuple} ---")
+            # print(f"--- movetuple= {humanmovetuple} ---")
             #### GET BOARD FROM DB
             board = gamedb.getboard()
+            print(f"+++ board retrieved hm= {board} ---")
             ####  UPDATE BOARD WITH HUMAN MOVE  ####
             board = ttt.result(board, humanmovetuple)
             print(f"--- board after human mv= {board} ---")
@@ -115,14 +118,20 @@ def play():
             if winner is not None:
                 print(f"--- winner={winner} ---")
                 return jsonify({'winner': winner})
+            #### STORE BOARD IN DB
+            gamedb.saveboard(board)
             ####    DETERMINE WHOSE TURN
             player = ttt.player(board)
             print(f"--- player after 1st mv= {player} ---")
         ####  AI  MOVE
         print(f"--- AI MOVE")
         time.sleep(0.5)
+        #### GET BOARD FROM DB
+        board = gamedb.getboard()
+        print(f"+++ board retrieved  ai= {board} ---")
+        #### ai makes move
         aimove = ttt.minimax(board)
-        print(f"---aimove={aimove}")
+        print(f"\n---aimove={aimove}")
         #### update board
         board = ttt.result(board, aimove)
         print(f"--- board after ai mv= {board} ---")

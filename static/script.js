@@ -23,15 +23,6 @@ class TicTacToeGame {
             this.chooseplayer();
         });
     }
-    chooseplayer() {
-        console.log('...+++chooseplayer()');
-        this.showElement("chooseplayer");
-        this.hideElement("board");
-        this.message1.innerHTML = "Choose your player";
-        this.message2.innerHTML = "X plays first";
-        this.message2.style.border = "None";
-        this.disableElement('message2');
-    }
 
     hideElement(element) {
         var x = document.getElementById(element);
@@ -53,9 +44,23 @@ class TicTacToeGame {
         x.disabled = true;
     }
 
-    newGame(chosenplayer) {
-        console.log('...+++newGame()');
+    chooseplayer() {
+        console.log('...+++chooseplayer()');
+        this.showElement("chooseplayer");
+        this.hideElement("board");
+        this.message1.innerHTML = "Choose your player";
+        this.message2.innerHTML = "X plays first";
+        this.message2.style.border = "None";
+        this.disableElement('message2');
+    }
+
+    startGame(chosenplayer) {
+        console.log('...+++startGame()');
         // define new game
+        //clear board
+        document.querySelectorAll('.cell').forEach(item => {
+            item.innerHTML = "";
+        });
         this.newgameatrib = true;
         this.human = chosenplayer;
         this.ai = (chosenplayer === 'X') ? 'O' : 'X';
@@ -66,7 +71,7 @@ class TicTacToeGame {
         this.showElement("board");
 
         if (this.human === 'O') {
-            this.play(true, this.human, this.ai, 'None');
+            this.play( );
         }
     }
 
@@ -74,7 +79,7 @@ class TicTacToeGame {
         console.log('...+++play(), newgameatrib=' , this.newgameatrib,  'human=', this.human, 'ai=', this.ai, 'humanmove=', humanmove);
         // check if this call if from board
         
-        if (humanmove !== 'None') {
+        if (humanmove) {
             // mark the board
             document.getElementById(humanmove).innerHTML = this.human;
             this.message2.innerHTML = "Computer's turn...thinking";
