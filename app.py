@@ -131,7 +131,7 @@ def play():
         board = gamedb.getboard()
         player = ttt.player(board)
         print(f">>>> player b4 ai mv= {player} ---")
-        print(f"+++ board retrieved  ai= {board} ---")
+        print(f"+++ board retrieved b4 ai mv= {board} ---")
         #### ai makes move
         aimove = ttt.minimax(board)
         print(f"\n---aimove={aimove}")

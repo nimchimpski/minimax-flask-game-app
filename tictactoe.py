@@ -64,14 +64,20 @@ def result(board, action):
     # print('+++RESULT FN+++')
     # print('+++action> ', action)
     if terminal(board) == True:
+        # if player(board) == X:
+            # print('>>>terminalboard')
         return None
     # print(f'\n>>>results player  {player(board)}, action  {action}')
     if board[action[0]][action[1]] != EMPTY:
         raise Exception("ai trying to overwrite a move")
     else:
         newboard = copy.deepcopy(board)
+        # if player(board) == X:
+            # print(f'---player(board) {player(board)}')
         newboard[action[0]][action[1]] = player(board)
-        # print('>>>result() newboard> ', newboard)
+        # if player(board) == X:
+            # print('---newboard> ', newboard)
+    
     return newboard
 
 def winner(board):
@@ -126,13 +132,15 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
+    print('+++MINMAX FN+++')
+    print('+++board', board)
     # print('+++MINMAX FN+++')
     if terminal(board) == True:
         # print('minmax() terminal = True')
         return None
 
     turn = player(board)
-
+    print('>>>turn = ', turn)
     if turn == X:
         # XKCD starter
         if sum(row.count(X) for row in board) == 0:

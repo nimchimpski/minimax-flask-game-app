@@ -11,6 +11,7 @@ class TicTacToeGame {
         this.message1 = document.getElementById("message1");
         this.message2 = document.getElementById("message2");
         this.init();
+        this.cells = document.querySelectorAll('.cell');
     }
 
     init() {
@@ -19,9 +20,7 @@ class TicTacToeGame {
                 this.play(event.target.id);
             })
         });
-        document.getElementById('message2').addEventListener('click', event => {
-            this.chooseplayer();
-        });
+       
     }
 
     hideElement(element) {
@@ -35,13 +34,27 @@ class TicTacToeGame {
     }
 
     enableElement(element) {
+        // console.log('...+++enableElement()');
         var x = document.getElementById(element);
+        console.log('...+++enableElement(), x=', x);
         x.disabled = false;
     }
 
     disableElement(element) {
         var x = document.getElementById(element);
+        console.log('...+++disableElement(), x=', x);
         x.disabled = true;
+    }
+
+    // Define a function to remove event listeners
+    removeEventListeners() {
+        console.log('...+++removeEventListeners()');    
+        this.cells.forEach(cell => {
+            // remove event listener
+            cell.removeEventListener('click', event => {
+                this.play(event.target.id);
+            })
+        });
     }
 
     chooseplayer() {
@@ -123,10 +136,15 @@ class TicTacToeGame {
                     var result = 'FOOLS. You both lost.'
                 else {
                     var result = (data.winner === this.human ? "You win!" : "You lose!");}
+
                 this.message1.innerHTML = 'GAME OVER   '+ result;
                 this.message2.style.border = "1px solid white"
                 this.message2.innerHTML = "Play again?";
                 this.enableElement('message2');
+                // disable baord
+                console.log('...disable board')
+                // this.removeEventListeners();
+            
             } else {
                 this.message2.innerHTML = "Your turn - come on";
             }
