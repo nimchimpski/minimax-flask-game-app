@@ -112,13 +112,10 @@ def terminal(board):
     """
     if winner(board) != None:
         return True
-    d = {'X': 0, 'O': 0, None: 0}
-    for i in board:
-        for j in i:
-            d[j] = d[j] + 1
-    if d[EMPTY] == 0:
+    elif sum(row.count(EMPTY) for row in board) == 0:
         return True
-    return False
+    else:
+        return False
 
 def utility(board):
     """
@@ -135,76 +132,78 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
+    print('+++MINMAX FN+++')
+    print('+++board', board)
     # print('+++MINMAX FN+++')
-    if terminal(board):
-    	return None
-    array = dict()
+    if terminal(board) == True:
+        # print('minmax() terminal = True')
+        return None
+
+    turn = player(board)
+    print('>>>turn = ', turn)
+    if turn == X:
+        # XKCD starter
+        if sum(row.count(X) for row in board) == 0:
+            return random.choice([(0, 0), (0, 2), (2, 0), (2, 2)])
+        actionsdict = {}
+        # print(">>>X minmax actions> ", actions(board))
+        # recursion here
+        for action in actions(board):
+            # print(">>>X action = ", action)
+            actionsdict[action] = minvalue(result(board, action), -math.inf, math.inf)
+            # print("actionsdict[action] ", actionsdict[action])
+        # print("\n>>>X actionsdict>", actionsdict)
+        maxval = max(actionsdict.values())
+        for key, val in actionsdict.items():
+            # print('>>>maxval>', maxval)
+            if val == maxval:
+                # print(f">>> X chooses > ", {key}, {val})
+                return key
+
+    if turn == O:
+        actionsdict = {}
+        # print(">>>O minmax actios> ", actions(board))
+        for action in actions(board):
+            # print(">>>O action = ", action)
+            actionsdict[action] = maxvalue(result(board, action), -math.inf, math.inf)
+            # print("actionsdict[action] type ", type(actionsdict[action]),(actionsdict[action]),)
+        # print("\n>>>O actionsdict>", actionsdict)
+        minval = min(actionsdict.values())
+        for key, val in actionsdict.items():
+            # print('>>>minval>', minval)
+            if val == minval:
+                # print(f">>> O chooses > ", {key}, {val})
+                return key
+
+def maxvalue(board, alpha, beta):
+    vmax = -math.inf
+    if terminal(board) == True:
+        # print('\n>>>at max basecase')
+        # print('\nmax basecase value', utility(board))
+        return utility(board)
     for action in actions(board):
-        if player(board) == X:
-            ####  IF BOARD IS EMPTY, PICK A CORNER
-            if sum(row.count(X) for row in board) == 0:
-    	        print('>>>X picks a corner')
-    	        return random.choice([(0, 0), (0, 2), (2, 0), (2, 2)])
-          
-            ####   STORE MIN VALS IN DICT
-            value = minvalue(result(board, action))
-            array[action] = value
-        else:
-        	####   STORE MAX VALS IN DICT
-            value = maxvalue(result(board, action) )
-            array[action] = value
-    
-    if player(board) == X:
-    	####   PICK MAX OF THESE MINS 
-    	return max(array, key=lambda unit: array[unit])
-    else:
-    	#### 	 PICK MIN OF THESE MAXS
-    	return min(array, key=lambda unit: array[unit])
+        vmax = max(vmax, minvalue(result(board, action), alpha, beta))
+        if vmax > beta:
+            return vmax
+        alpha = max(vmax, alpha)
+    return vmax
 
-def minvalue(board):
-    
-    if terminal(board):
+    # print('>>>loop max v>', v)
+    # print('maxvalue returning now with v = ', v)
+
+def minvalue(board, alpha, beta):
+    vmin = math.inf
+    if terminal(board) == True:
+        # print('\nat min basecase')
+        # print('\nmin basecase value', utility(board))
         return utility(board)
-    else:
-        v = 2
-        for action in actions(board):
-            v = min(v, maxvalue(result(board, action)))
-    
-        return v
-
-
-def maxvalue(board):
-    
-    if terminal(board):
-        return utility(board)
-    else:
-        v = -2
-        for action in actions(board):
-            v = max(v, minvalue(result(board, action)))
-
-    return v
-
-# def maxvalue(board, alpha, beta):
-#     vmax = -math.inf
-#     if terminal(board) == True:
-#         return utility(board)
-#     for action in actions(board):
-#         vmax = max(vmax, minvalue(result(board, action), alpha, beta))
-#         if vmax > beta:
-#             return vmax
-#         alpha = max(vmax, alpha)
-#     return vmax
-
-
-# def minvalue(board, alpha, beta):
-#     vmin = math.inf
-#     if terminal(board) == True:
-#         return utility(board)
-#     for action in actions(board):
-#         vmin = min(vmin, maxvalue(result(board, action), alpha, beta))
-#         if vmin < alpha:
-#             return vmin
-#         beta = min(vmin, beta)
-#     return vmin
+    for action in actions(board):
+        vmin = min(vmin, maxvalue(result(board, action), alpha, beta))
+        if vmin < alpha:
+            return vmin
+        beta = min(vmin, beta)
+        # print('>>>loop min v>', v)
+    # print('minvalue returning now with v = ', v)
+    return vmin
 
 

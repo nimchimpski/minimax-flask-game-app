@@ -10,6 +10,8 @@ class TicTacToeGame {
         this.newgameatrib = false;
         this.message1 = document.getElementById("message1");
         this.message2 = document.getElementById("message2");
+        this.message2enabled = false;
+        this.boardenabled = true;
         this.init();
         this.cells = document.querySelectorAll('.cell');
     }
@@ -17,8 +19,14 @@ class TicTacToeGame {
     init() {
         document.querySelectorAll('.cell').forEach(item => {
             item.addEventListener('click', event => {
+                if (this.boardenabled)
                 this.play(event.target.id);
             })
+        // make message2 clickable
+        document.getElementById("message2").addEventListener('click', event => {
+            if (this.message2enabled)
+            this.chooseplayer();
+        })
         });
        
     }
@@ -37,7 +45,7 @@ class TicTacToeGame {
         // console.log('...+++enableElement()');
         var x = document.getElementById(element);
         console.log('...+++enableElement(), x=', x);
-        x.disabled = false;
+        x.enabled = false;
     }
 
     disableElement(element) {
@@ -64,7 +72,8 @@ class TicTacToeGame {
         this.message1.innerHTML = "Choose your player";
         this.message2.innerHTML = "X plays first";
         this.message2.style.border = "None";
-        this.disableElement('message2');
+        this.message2enabled = false;
+        console.log('...message2enabled=', this.message2enabled )
     }
 
     startGame(chosenplayer) {
@@ -80,9 +89,12 @@ class TicTacToeGame {
         if (chosenplayer === 'X'){
             this.message2.innerHTML = "Your turn " };
         this.message1.innerHTML = "You are playing as " + this.human;
+        this.message2enabled = false;
+        console.log('...message2enabled=', this.message2enabled )
 
         this.hideElement("chooseplayer");
         this.showElement("board");
+        this.boardenabled = true;
 
         if (this.human === 'O') {
             this.play( );
@@ -140,9 +152,11 @@ class TicTacToeGame {
                 this.message1.innerHTML = 'GAME OVER   '+ result;
                 this.message2.style.border = "1px solid white"
                 this.message2.innerHTML = "Play again?";
-                this.enableElement('message2');
+                this.message2enabled = true;
+                console.log('...message2enabled=', this.message2enabled )
                 // disable baord
-                console.log('...disable board')
+                this.boardenabled = false;
+                console.log('...disable board, boardenabled=', this.boardenabled )
                 // this.removeEventListeners();
             
             } else {

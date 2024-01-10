@@ -112,13 +112,10 @@ def terminal(board):
     """
     if winner(board) != None:
         return True
-    d = {'X': 0, 'O': 0, None: 0}
-    for i in board:
-        for j in i:
-            d[j] = d[j] + 1
-    if d[EMPTY] == 0:
+    elif sum(row.count(EMPTY) for row in board) == 0:
         return True
-    return False
+    else:
+        return False
 
 def utility(board):
     """
@@ -138,7 +135,7 @@ def minimax(board):
     # print('+++MINMAX FN+++')
     if terminal(board):
     	return None
-    array = dict()
+    actionsdict = {}
     for action in actions(board):
         if player(board) == X:
             ####  IF BOARD IS EMPTY, PICK A CORNER
@@ -147,40 +144,42 @@ def minimax(board):
     	        return random.choice([(0, 0), (0, 2), (2, 0), (2, 2)])
           
             ####   STORE MIN VALS IN DICT
-            value = minvalue(result(board, action))
-            array[action] = value
+            actionsdict[action] = minvalue(result(board, action))
         else:
         	####   STORE MAX VALS IN DICT
-            value = maxvalue(result(board, action) )
-            array[action] = value
+            actionsdict[action] = maxvalue(result(board, action) )
     
     if player(board) == X:
     	####   PICK MAX OF THESE MINS 
-    	return max(array, key=lambda unit: array[unit])
+    	maxval = max(actionsdict.values())
+    	for key, val in actionsdict.items():
+    	    if val == maxval:
+    	        return key
     else:
     	#### 	 PICK MIN OF THESE MAXS
-    	return min(array, key=lambda unit: array[unit])
-
-def minvalue(board):
-    
-    if terminal(board):
-        return utility(board)
-    else:
-        v = 2
-        for action in actions(board):
-            v = min(v, maxvalue(result(board, action)))
-    
-        return v
-
+    	minval = min(actionsdict.values())
+    	for key, val in actionsdict.items():
+    	    # print('>>>minval>', minval)
+    	    if val == minval:
+    	        # print(f">>> O chooses > ", {key}, {val})
+    	        return key
 
 def maxvalue(board):
-    
+    v = -math.inf
+    if terminal(board) == True:
+        return utility(board)
+    for action in actions(board):
+        v = max(v, minvalue(result(board, action)))
+   
+    return v
+
+
+def minvalue(board):
+    v = math.inf
     if terminal(board):
         return utility(board)
-    else:
-        v = -2
-        for action in actions(board):
-            v = max(v, minvalue(result(board, action)))
+    for action in actions(board):
+        v = min(v, maxvalue(result(board, action)))
 
     return v
 
