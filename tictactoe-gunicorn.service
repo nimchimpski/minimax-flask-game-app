@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn instance to serve tictactoe
+After=network.target
+
+[Service]
+User=nim
+WorkingDirectory=/var/www/tictactoe
+Environment="PATH=/var/www/tictactoe/venv/bin"
+ExecStart=/var/www/tictactoe/venv/bin/gunicorn --workers 3 --bind unix:/var/www/tictactoe/ayou.sock tictactoe.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
