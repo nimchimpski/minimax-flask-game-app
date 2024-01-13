@@ -147,11 +147,11 @@ def minimax(board):
     	        return random.choice([(0, 0), (0, 2), (2, 0), (2, 2)])
           
             ####   STORE MIN VALS IN DICT
-            value = minvalue(result(board, action))
+            value = minvalue(result(board, action),-math.inf, math.inf)
             array[action] = value
         else:
         	####   STORE MAX VALS IN DICT
-            value = maxvalue(result(board, action) )
+            value = maxvalue(result(board, action),-math.inf, math.inf )
             array[action] = value
     
     if player(board) == X:
@@ -161,26 +161,31 @@ def minimax(board):
     	#### 	 PICK MIN OF THESE MAXS
     	return min(array, key=lambda unit: array[unit])
 
-def minvalue(board):
+def minvalue(board, alpha, beta):
     
     if terminal(board):
         return utility(board)
     else:
-        v = 2
+        v = math.inf
         for action in actions(board):
-            v = min(v, maxvalue(result(board, action)))
+            v = min(v, maxvalue(result(board, action), alpha, beta))
+            if v <= alpha:
+                return v
     
         return v
 
 
-def maxvalue(board):
+def maxvalue(board, alpha, beta):
     
     if terminal(board):
         return utility(board)
     else:
-        v = -2
+        v = -math.inf
         for action in actions(board):
-            v = max(v, minvalue(result(board, action)))
+            v = max(v, minvalue(result(board, action), alpha, beta))
+            if v >= beta:
+                return v
+            alpha = max(v, alpha)
 
     return v
 

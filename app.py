@@ -128,7 +128,7 @@ def play():
         
         ####  AI  MOVE
         print(f"--- AI MOVE")
-        time.sleep(0.5)
+        # time.sleep(0.5)
         #### GET BOARD FROM DB
         board = gamedb.getboard()
         player = ttt.player(board)
