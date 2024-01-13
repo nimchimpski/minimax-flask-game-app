@@ -42,6 +42,8 @@ class Gamedb(db.Model):
         self.boardstate = json.dumps(board)
         if human is not None:
             self.human = json.dumps(human)
+        db.session.commit()
+        
         return board
 
     def getboard(self):
