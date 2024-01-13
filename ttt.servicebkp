@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicorn instance to serve tictactoe
+After=network.target
+
+[Service]
+User=alex
+Group=www-data
+WorkingDirectory=/var/www/ttt
+Environment="PATH=/var/www/ttt/venv/bin"
+ExecStart=/var/www/ttt/venv/bin/gunicorn --workers 3 --bind unix:ttt.sock -m 007 wsgi:app
+ExecStart=/var/www/ttt/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 wsgi:app
+
+
+[Install]
+WantedBy=multi-user.target
