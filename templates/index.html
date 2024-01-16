@@ -48,13 +48,25 @@
             </table>
         </div>
     </div>
-    <div id = notes>
+    <div class = "textboxcontainer">
+    <div id = notes class="textbox">
         <br><br><br><br>
-        <p>Its interesting to note how the minimax algorithm must award a max/min score for paths that lead it to having more ways to win, resulting  in it  seeming to miss a chance to win, only to reveal in the next move, rather annoyingly,  that it had 2 options, and theres nothing you can do. I wonder how this plays out when scaled up to bigger games.</p>
+        <p>Its interesting to note how the minimax algorithm awards a higher utility for paths that lead it to having more ways to win, resulting  in it  seeming to miss a chance to finish the game, only to reveal with the next move, rather annoyingly,  that it now has 2 options to win, and theres nothing you can do. I wonder how this plays out when scaled up to bigger games. It shows how very simple rules like this can lead to non-human-like but ultimately effective and pwerful outcomes.</p>
+        <br><br><br>
+    
+        <p>How does it work?<br>
+        Its very very simple. Each move is like a window. Through each window you can look at what moves your opponent could make. Naturally you will pick the one thats best for you (and worst for them). 
+        Thats it.
+        You just take that image and apply it to each of the moves your opponent made, with them looking through a window at your moves, but this time with their interests at heart, so they picked the one best for them. 
+        This carries on untill the final move in that particular path, which will either be a win for you or the opponnent, clearly informing your last but one move...and so on up. So the same small piece of logic can be used for both players, just alternating. 
+        The way the computer understands this is to first assign a value to a win for each player - high for one (the maximizer) and low for the other (the minimizer). Then each move is easily assessed by what score it leads to.
+
+        
+        
+    
+        </p>
     </div>
-    <div id = explanation>
-        <p>Here's how i understand this to work.</p>
-    </div>
+</div>
    
    
     <script src="{{ url_for('static', filename='script.js') }}"></script>
@@ -64,6 +76,10 @@
    @import url('https://fonts.googleapis.com/css2?family=Gruppo&display=swap');
 
     body {
+        /* display: flex; */
+        /* flex-direction: column;
+        justify-content: center;
+        align-items: center; */
         background-color: #000000;
         color: #FFFFFF;
         font-family: 'Gruppo', sans-serif;
@@ -145,6 +161,30 @@
         text-align: center;
         vertical-align: middle;
         font-size: 5rem;
+    }
+    .textboxcontainer {
+        position: absolute;
+        top: 520px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        left: 0;
+        right: 0;
+        margin: auto;
+    
+        background-color: #000000;
+        color: #ffffff;
+        /* width: 80vw; */
+        padding: 00px 50px 00px 50px;
+        overflow: scroll;
+        /* border: #FFFFFF 1px solid; */
+    }
+    .textbox {
+        max-width: 500px;
+        border: #FFFFFF 1px solid;
+        padding: 0px 50px 0px 50px;
     }
    
 </style>
