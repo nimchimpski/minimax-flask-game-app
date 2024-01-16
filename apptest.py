@@ -1,15 +1,17 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
-# from flask_session import Session
+from flask import Flask, render_template, session, request, jsonify, redirect, url_for
+from flask_session import Session
 from tempfile import mkdtemp
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.middleware.proxy_fix import ProxyFix
 import sys
 import time
 import json
+import uuid
 
 import tictactoe as ttt
 
 app = Flask(__name__)
+app.secret_key = "supermofustrongpword"
 
 # Configure ProxyFix with the correct parameters
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
@@ -17,38 +19,26 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 # config database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
-# init session
+
+# Configure session to use filesystem (instead of signed cookies)
+# app.config["SESSION_PERMANENT"] = False
+# app.config["SESSION_TYPE"] = "filesystem"
 # Session(app)
-# db.init_app(app)
-
-
 
 # Set the app to debug mode
-app.debug = False
-app.config['ENV'] = 'production'
+app.debug = True
+app.config['ENV'] = 'development'
+# app.debug = False
+# app.config['ENV'] = 'production'
 
-
-
-# human = None
-# board = ttt.initial_state()
-# ai_turn = False
 X = "X"
 O = "O"
 EMPTY = None
-
-
 
 class Gamedb(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     boardstate = db.Column(db.String, nullable=False)  # Store board as a string
     human = db.Column(db.String, nullable=False)  # Store human as a string
-
-    # def saveboard(self, board, human=None):
-    #     self.boardstate = json.dumps(board)
-    #     if human is not None:
-    #         self.human = json.dumps(human)
-    #     db.session.commit()
-    #     return board
 
     def saveboard(self, board, human=None):
         # Retrieve the first record in the database
@@ -84,10 +74,21 @@ with app.app_context():
 
 gamedb = Gamedb()
 
+@app.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
+
 @app.route('/', methods=['GET'])
 def index():
-    # print('>>>INDEX ROUTE')
-    
+    print('>>>INDEX ROUTE')
+    if 'session_id' not in session:
+        session['session_id'] = str(uuid.uuid4())
+    id = session['session_id']
+    print(f'---id={id}')
     return render_template('index.html')
 
 @app.route('/play', methods=['POST', 'GET'])
