@@ -1,4 +1,6 @@
 Venv/
-/z
+z/
 __pychache__
 requirementsbig.txt
+.DS_Store
+ttt.code-workspace
