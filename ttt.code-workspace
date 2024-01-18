@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../../../Cs50/week9 Flask"
+		},
+		{
+			"path": ".."
 		}
 	],
 	"settings": {}
