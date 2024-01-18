@@ -7,4 +7,4 @@ sudo systemctl status ttt
 sudo systemctl reload nginx
 
 # make it executable with:
-# chmod +x myscript.sh
+# chmod +x restartserver.sh
