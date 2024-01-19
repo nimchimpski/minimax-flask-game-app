@@ -1,6 +1,6 @@
 Venv/
 z/
-__pychache__
+__pycache__
 requirementsbig.txt
 .DS_Store
 ttt.code-workspace
@@ -8,3 +8,4 @@ ttt.servicebkp
 instance/
 database.db
 sods
+flask_session/
