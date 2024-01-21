@@ -18,12 +18,12 @@
 </head>
 
 <body onload="init()">
-    <H3>X-RISKERS AND OPTI-MISERS</P></H3>
+    <H1>X-RISKERS AND OPTI-MISERS</P></H1>
     <!-- Your HTML code for game board goes here -->
-    <div id="messages">
+    <header id="messages">
         <p id="message1">Choose your player</p>
         <p id="message2">X plays first</p>
-    </div>
+    </header>
     <div id="container">
         <div id="chooseplayer">
     
@@ -53,11 +53,11 @@
         </div>
     </div>
     <div class = "textboxcontainer">
-    <div id = notes class="textbox">
+    <section id = notes class="textbox">
         <p>Its interesting to note how the minimax algorithm awards a higher utility for paths that lead it to having more ways to win, resulting  in it  seeming to miss a chance to finish the game, only to reveal with the next move, rather annoyingly,  that it now has 2 options to win, and theres nothing you can do. I wonder how this plays out when scaled up to bigger games. It shows how very simple rules like this can lead to non-human-like but ultimately effective and powerful outcomes.</p>
         <br><br><br>
     
-        <p>How does it work?<br>
+        <p>How does it work?<br><br>
         Its very very simple. Each move is like a window. Through each window you can look at what moves your opponent could make. Naturally you will pick the one thats best for you (and worst for them). 
         Thats it.
         You just take that image and apply it to each of the moves your opponent made, with them looking through a window at your moves, but this time with their interests at heart, so they picked the one best for them. 
@@ -68,7 +68,7 @@
         
     
         </p>
-    </div>
+    </section>
 </div>
    
    
@@ -89,6 +89,10 @@
         caret-color: transparent;
         padding: 15px;
         height: 100vh;
+    }
+    H1 {
+        font-size: 2rem;
+        text-align: center
     }
     #messages {
         display: flex;
@@ -137,10 +141,6 @@
         display: none;
     }
 
- 
-    H3 {
-        text-align: center;
-    }
     table {
         table-layout: fixed;
         width: 300px;
@@ -175,19 +175,20 @@
 
         left: 0;
         right: 0;
-        margin: auto;
+        margin-left: auto;
+        margin-right: auto;
     
         background-color: #000000;
         color: #ffffff;
         /* width: 80vw; */
-        padding: 00px 50px 00px 50px;
+        padding: 0px 0px 30px 0px;
         overflow: scroll;
         /* border: #FFFFFF 1px solid; */
     }
     .textbox {
         max-width: 500px;
         border: #FFFFFF 1px solid;
-        padding: 40px 50px 40px 50px;
+        padding: 20px 10px 20px 10px;
     }
    
 </style>
