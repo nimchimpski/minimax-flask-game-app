@@ -7,14 +7,13 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-0QF4XKGKKH');
 </script>
     <title>A Tic-Tac-Toe game using the minimax algorithm</title>
     <meta name = "description" content = "A Tic-Tac-Toe game using the minimax algorithm">
     <meta name = "robots" content = "index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <!-- css location -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'sharedstatic1.css')}}">
 </head>
 
@@ -73,7 +72,7 @@
 </div>
    
    
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='tttscript.js') }}"></script>
 </body>
 </html>
 <style>
