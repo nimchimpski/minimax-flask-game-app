@@ -7,6 +7,7 @@ import sys
 import time
 import json
 import uuid
+import os
 
 import tictactoe as ttt
 
@@ -22,8 +23,12 @@ db = SQLAlchemy(app)
 app.config['SQLALCHEMY_ECHO'] = True
 
 # Set the app to debug mode
-app.debug = True
-app.config['ENV'] = 'development'
+environment = os.environ.get('FLASK_ENV', 'production')
+app.config['ENV'] = 'environment'
+if environment == 'development':
+    app.config['DESBUG'] = True
+else:
+    app.config['DEBUG'] = False
 # app.debug = False
 # app.config['ENV'] = 'production'
 
