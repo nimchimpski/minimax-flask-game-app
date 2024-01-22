@@ -10,7 +10,7 @@ import uuid
 
 import tictactoe as ttt
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../sharedstatic')
 app.secret_key = "supermofustrongpword"
 
 # Configure ProxyFix with the correct parameters
