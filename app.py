@@ -11,7 +11,8 @@ import os
 
 import tictactoe as ttt
 
-app = Flask(__name__, static_folder='../sharedstatic')
+# app = Flask(__name__, static_folder='../sharedstatic')
+app = Flask(__name__)
 app.secret_key = "supermofustrongpword"
 
 # Configure ProxyFix with the correct parameters
@@ -36,7 +37,7 @@ X = "X"
 O = "O"
 EMPTY = None
 
-
+#####    THE DATABASE MODEL    #####
 # Gamedb is actually a row in the database ? TODO change name
 class Gamedb(db.Model):
     dbid = db.Column(db.Integer, primary_key=True, autoincrement=True)
